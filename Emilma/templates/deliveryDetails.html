@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Details | Milma
+{% endblock title %}
+
+
+{% block css %}
+    /* Add your custom CSS styles here */
+    .detailsContainer{
+        display:grid;
+        align-items:center;
+        justify-content:center;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        text-align: center;
+        margin-top: 50px;
+        margin-bottom: 30px;
+        font-size: 24px;
+    }
+
+    .container {
+        width: 50%;
+        margin: 0 auto;
+    }
+
+    .form-label {
+        font-weight: bold;
+    }
+
+    .form-select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+    }
+
+    .btn-success {
+        display: block;
+        width: 100%;
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 12px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .orderBox {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-top: 50px;
+    }
+
+    .orderBox ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .orderBox ul li {
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .orderBox ul li:last-child {
+        border-bottom: none;
+    }
+
+    .orderBox ul li span {
+        font-weight: bold;
+    }
+{% endblock css %}
+
+    
+
+{% block body %}
+
+    <div class="detailsContainer">
+        <h1 class="mt-5 mb-5">Enter the details below</h1>
+    <div style="width:100%;">
+        <div class="mb-3" style="width:100%;">
+          <label for="" class="form-label">Deliver At</label>
+          <select class="form-select" id="deliveryLocation" name="deliveryLocation">
+            <option value="OAT">OAT</option>
+            <option value="Football Ground">Football Ground</option>
+            <option value="Volleyball Ground">Volleyball Ground</option>
+            <option value="Admin Block">Admin Block</option>
+            <option value="New Academic Block Stairs">New Academic Block Stairs</option>
+            <option value="Manimala Hostel">Manimala Hostel</option>
+            <option value="Meenachil Hostel">Meenachil Hostel</option>
+            <option value="Sahayadri Hostel">Sahayadri Hostel</option>
+            <option value="Girls Hostel">Girls Hostel</option>
+        </select>
+        <p>If you are not found at this location, we will deliver your order at your hostel room.</p>
+            </div>
+            <button class="btn btn-success" type="submit" onClick="makePayment()">Pay</button>
+    </div>
+    <h1 class="mt-5">Your order</h1>
+    <div class="orderBox" id="orderBox"></div>
+    </div>
+{% endblock body %}
+    
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        displayOrder();
+    });
+
+    function displayOrder() {
+        var orderBox = document.getElementById('orderBox');
+        var cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+        if (Object.keys(cart).length === 0) {
+            orderBox.innerHTML = '<p>Your Cart is empty. Add some items to proceed.</p>';
+            return;
+        }
+
+        var orderHTML = "<ul>";
+        var total = 0;
+
+        for (var item in cart) {
+            orderHTML += "<li>";
+            orderHTML += "<span>" + cart[item][0] + "</span>: Qty: " + cart[item][1] + " | Price: Rs. " + (cart[item][2] * cart[item][1]).toFixed(2);
+            orderHTML += "</li>";
+            total += cart[item][2] * cart[item][1];
+        }
+
+        orderHTML += "</ul>";
+        orderHTML += "<p>Total: Rs. " + total.toFixed(2) + "</p>";
+        orderBox.innerHTML += orderHTML;
+    }
+
+
+    function makePayment() {
+        console.log("Inside make payment");
+        var order = JSON.parse(localStorage.getItem('order')) || {};
+
+        {% if user.is_authenticated %}
+            var cart = JSON.parse(localStorage.getItem('cart')) || {};
+            var totalPrice = 0;
+            for (var item in cart) {
+                totalPrice += cart[item][2] * cart[item][1];
+            }
+            var customer = "{{ request.user }}";
+            var selectedLocation = document.getElementById('deliveryLocation').value;
+            var order = {
+                customer: customer,
+                items_json: cart,
+                status: "Pending",
+                location: selectedLocation,
+                amount: totalPrice
+            };
+            localStorage.setItem('order', JSON.stringify(order));
+            window.location.replace('http://127.0.0.1:8000/payment');
+        {% else %}
+            console.log("User is not authenticated");
+        {% endif %}
+    }
+</script>
+{% endblock script %}

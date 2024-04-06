@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Home
+{% endblock title %}
+
+{% block css %}
+    .col-md-3 {
+        display: inline-block;
+        margin-left: -4px;
+    }
+
+    .carousel-indicators .active {
+        background-color: blue;
+    }
+
+    .col-md-3 img {
+        max-width: 227px;
+        height: 242px;
+    }
+
+    body .carousel-indicator li {
+        background-color: blue;
+    }
+
+    body .carousel-indicators {
+        bottom: 0;
+    }
+
+    body .carousel-control-prev-icon,
+    body .carousel-control-next-icon {
+        background-color: blue;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+        top: auto;
+        bottom: auto;
+    }
+
+    body .no-padding {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .card-img-top {
+        object-fit: cover;
+        max-width: 100%; /* Adjust as needed */
+        max-height: 100%; /* Adjust as needed */
+        width: auto;
+        height: auto;
+    }
+
+    .carousel-control-prev{
+        margin-left: -150px;
+        padding:0;
+    }
+    .carousel-control-next{
+        margin-right: -100px;
+        padding:0;
+    }
+{% endblock %}
+
+{% block body %}
+    {% load static %}
+    <div class="container">
+        <!-- Slideshow starts here -->
+        {% for product, range, nSlides in allProds %}
+            <h5 class="my-4">Items in {{ product.0.subcategory }} - Recommended Items</h5>
+            <div id="demo{{ forloop.counter }}" class="carousel slide my-3" data-ride="carousel">
+
+
+                <div class="container carousel-inner no-padding">
+                    <div class="carousel-item active" id="carouselExample">
+                        <div class="col-xs-3 col-sm-3 col-md-3">
+                            <div class="card" style="width: 18rem;">
+                                <div style="width: 100%; height: 50%; margin: auto;">
+                                    <img src='{{ product.0.image }}' class="card-img-top" alt="...">
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title" id="name{{ product.0.product_id }}">{{ product.0.product_name }}</h5>
+                                    <p class="card-text" id="">{{ product.0.description }}</p>
+                                    <p class="card-text" id="price{{ product.0.product_id }}">Price: Rs. {{ product.0.price }}</p>
+                                    <a class="btn btn-primary" id="pr{{ product.0.product_id }}" style="display:block;">Add to Cart</a>
+                                    <div  class="mx-2" style="display:flex; display:none; width:100%; justify-content:center; align-items:center;" id="buttonSection{{product.0.product_id}}">
+                                        <button id="plus{{ product.0.product_id }}" class="btn btn-primary" onClick = "incrementQuantity({{ product.0.product_id }})">+</button>
+                                        <p id="quantity{{ product.0.product_id }}" class="mx-2" style="display:flex; justify-content:center; align-items:center;">1</p>
+                                        <button id="minus{{ product.0.product_id }}" class="btn btn-primary" onClick = "decrementQuantity({{ product.0.product_id }})">-</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% for i in product|slice:"1:" %}
+                            <div class="col-xs-3 col-sm-3 col-md-3">
+                                <div class="card" style="width: 18rem;">
+                                    <div style="width: 100%; height: 50%;">
+                                        <img src='{{ i.image }}' class="card-img-top" alt="...">
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="card-title" id="name{{ i.product_id }}">{{ i.product_name }}</h5>
+                                        <p class="card-text" id="">{{ i.description }}</p>
+                                        <p class="card-text" id="price{{ i.product_id }}">Price: Rs. {{ i.price }}</p>
+                                        <a class="btn btn-primary" style="display:block;" id="pr{{ i.product_id }}">Add To Cart</a>
+                                        <div  style="display:flex; display:none; width:100%; justify-content:center; align-items:center;" id="buttonSection{{i.product_id}}">
+                                            <button id="plus{{ i.product_id }}" class="btn btn-primary" onClick = "incrementQuantity({{i.product_id}})">+</button>
+                                            <p id="quantity{{ i.product_id }}" class="mx-2" style="display:flex; justify-content:center; align-items:center;">1</p>
+                                            <button  id="minus{{ i.product_id }}" class="btn btn-primary"  onClick = "decrementQuantity({{i.product_id}})">-</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if forloop.counter|divisibleby:3 and forloop.counter > 0 and not forloop.last %}
+                                </div><div class="carousel-item">
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- left and right controls for the slide -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#demo{{ forloop.counter }}" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                  </button>
+                  <button class="carousel-control-next" type="button" data-bs-target="#demo{{ forloop.counter }}" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                  </button>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+<script>
+    // Check if the cart exists in local storage, if not create an empty cart
+    var cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : {};
+
+    // Function to initialize the UI based on the items in the cart
+    function initializeCartUI() {
+        for (var productId in cart) {
+            if (cart.hasOwnProperty(productId)) {
+                // Check if the product associated with the cart item exists on the current page
+                var productElement = document.getElementById("pr" + productId);
+                if (productElement) {
+                    updateAddToCartUI(productId, cart);
+                } else {
+                    // Product not found on the current page, handle it accordingly (skip or log)
+                    console.warn("Product with ID " + productId + " not found on the current page.");
+                }
+            }
+        }
+    }
+
+    // Call the function to initialize the UI when the DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeCartUI();
+
+        var buttons = document.querySelectorAll('[id^="pr"]');
+        buttons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                var productId = button.id.replace('pr', '');
+                var productName = button.parentElement.querySelector('.card-title').innerText;
+                var productPrice = button.parentElement.querySelector('.card-text:nth-child(3)').innerText.replace('Price: Rs. ', '');
+
+                addToCart(productId, productName, parseFloat(productPrice));
+            });
+        });
+    });
+
+    // Function to add product to cart
+    function addToCart(productId, productName, productPrice) {
+        console.log("Food")
+        if (cart[productId] !== undefined) {
+            cart[productId][1]++;
+            updateAddToCartUI(productId, cart);
+            displayCartItems();
+        } else {
+            cart[productId] = [productName, 1, productPrice];
+            updateAddToCartUI(productId, cart);
+            displayCartItems();
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        displayCartItems();
+    }
+
+    // Function to update the UI for a specific product in the cart
+    function updateAddToCartUI(productId, cart) {
+        var addButton = document.getElementById("pr" + productId);
+        var buttonSection = document.getElementById("buttonSection" + productId);
+        if (addButton && buttonSection) { // Check if both elements exist
+            addButton.style.display = "none";
+            buttonSection.style.display = "flex";
+            var quantityDisplay = document.getElementById("quantity" + productId);
+            if (quantityDisplay) { // Check if the quantity display element exists
+                quantityDisplay.innerHTML = cart[productId][1];
+            }
+        } else {
+            console.error("One or more elements not found for productId:", productId);
+        }
+    }
+
+    function updateCart(cart) {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        displayCartItems();
+    }
+
+    // Function to update the UI when removing a product from the cart
+    function updateAddToCartUIBack(productId, cart) {
+        var addButton = document.getElementById("pr" + productId);
+        addButton.style.display = "block";
+
+        var buttonSection = document.getElementById("buttonSection" + productId);
+        buttonSection.style.display = "none";
+    }
+
+    function incrementQuantity(productId){
+        console.log(productId);
+        cart[productId][1]++;
+        var quantityDisplay = document.getElementById("quantity" + productId);
+        quantityDisplay.innerHTML = cart[productId][1];
+        updateCart(cart);
+    }
+
+    function decrementQuantity(productId){
+        console.log(productId);
+        cart[productId][1]--;
+        if(cart[productId][1] === 0){
+            delete cart[productId];
+            updateAddToCartUIBack(productId, cart);
+        } else {
+            var quantityDisplay = document.getElementById("quantity" + productId);
+            quantityDisplay.innerHTML = cart[productId][1];
+        }
+        updateCart(cart);
+    }
+</script>
+
+
+
+
+{% endblock script %}

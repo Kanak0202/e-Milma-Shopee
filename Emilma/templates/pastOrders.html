@@ -1,0 +1,144 @@
+{% extends 'adminNavbar.html' %}
+{% block title %}
+    Past Orders
+{% endblock title %}
+
+{% block css %}
+    .table-container {
+        margin: 50px auto;
+        max-width: 1200px; /* Adjust as needed */
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #dee2e6; /* Change border color as needed */
+        border-radius: 5px;
+        overflow: hidden; /* Ensure table does not overflow */
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Add shadow for modern look */
+        margin-top:50px;
+    }
+
+    .table th,
+    .table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6; /* Change border color as needed */
+    }
+
+    .table th {
+        background-color: #f8f9fa; /* Change header background color */
+        font-weight: bold;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #f2f2f2; /* Change even row background color */
+    }
+
+    .table tbody tr:hover {
+        background-color: #e2e6ea; /* Change hover row background color */
+    }
+
+    .table tbody td {
+        word-wrap: break-word; /* Wrap long content */
+        max-width: 200px; /* Limit max-width of cells */
+    }
+{% endblock css %}
+
+{% block body %}
+<div class="table-container">
+    <h1 style="text-align:center; text-decoration:underline;">Previous Orders</h1>
+    <table class="table table-light table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Order Id</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Location</th>
+                <th scope="col">Items</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Status</th>
+                <th scope="col">Delivered By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if completedOrders %}
+                {% for order in completedOrders %}
+                <tr>
+                    <td>MILMAORD{{order.id}}</td>
+                    <td class="orderid" style="display: none;">{{order.id}}</td>
+                    <td>{{order.customer.user_profile.user.first_name}} {{order.customer.user_profile.user.last_name}}</td>
+                    <td>{{order.location}}</td>
+                    <td style="width:30%;" id="ord{{order.id}}" class="items" value="{{order.items_json}}">{{order.items_json}}</td>
+                    <td>Rs. {{order.amount}}</td>
+                    <td>{{order.status}}</td>
+                    <td>{{order.deliverer.user_profile.user.first_name}} {{order.deliverer.user_profile.user.last_name}}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">No orders to display</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock body %}
+
+{% block script %}
+<script>
+    // Get all elements with the class "items"
+    var itemsArray = document.getElementsByClassName("items");
+    // Iterate over each element in the itemsArray
+    for (var i = 0; i < itemsArray.length; i++) {
+        // Access the value attribute of each element
+        var itemValue = itemsArray[i].getAttribute('value');
+        console.log(itemValue);
+    }
+
+    var orderIdsClass = document.getElementsByClassName("orderid");
+        const orderIdsList = [];
+        for(i=0;i<orderIdsClass.length;i=i+1){
+            var allorderids = orderIdsClass[i].innerHTML;
+            orderIdsList.push(allorderids);
+        }
+        console.log(orderIdsList);
+
+        for (var i = 0; i < orderIdsList.length; i++) {
+            var valueElement = document.getElementById("ord" + orderIdsList[i]);
+            var value = valueElement.innerHTML;
+            valueElement.innerHTML = ''; // Clear the content after retrieving it
+        
+            try {
+                var items = JSON.parse(value);
+        
+                // Iterate over the keys of the parsed object
+                for (var key in items) {
+                    if (items.hasOwnProperty(key)) {
+                        var item = items[key];
+                        var name = item[0];
+                        var qty = item[1];
+                        var price = item[2];
+        
+                        // Create the HTML elements for each item
+                        var listItem = document.createElement('li');
+                        listItem.className = "list-group-item d-flex justify-content-between align-items-center";
+listItem.innerHTML = `
+    <div class="d-flex flex-column">
+        <div class="fw-bold">${name}</div>
+        <div class="text-muted">Price: Rs. ${price}</div>
+    </div>
+    <div class="d-flex align-items-center">
+        <span class="badge bg-warning text-dark">${qty}</span>
+    </div>
+`;
+                        // Append the list item to the corresponding element
+                        valueElement.appendChild(listItem);
+                    }
+                }
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+            }
+        }
+        
+</script>
+{% endblock script %}

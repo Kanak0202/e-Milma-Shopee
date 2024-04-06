@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %} {% endblock title %} | Milma Store</title>
+    <style>
+        .cart-box {
+          position: absolute;
+          z-index: 100;
+          border: 2px solid #ccc;
+          background-color: #fff;
+          border-radius: 5px;
+          width: 300px;
+          max-height: 400px;
+          overflow-y: auto;
+          top: 70px;
+          right: 10px;
+          padding: 10px;
+          box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      }
+      .cart-item {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+    }
+
+    .cart-item:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+  }
+
+  .cart-item-title {
+      font-weight: bold;
+  }
+
+  .cart-item-price {
+      color: #888;
+  }
+
+  .cart-total {
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: right;
+  }
+
+  .btn-checkout {
+      width: 100%;
+      margin-top: 10px;
+  }
+  .btn-clear {
+      width: 100%;
+      margin-top: 10px;
+  }
+    {% block css %} 
+    {% endblock %}
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary px-5">
+        <div class="container-fluid nav-container">
+          <a class="navbar-brand" href="#">e-Milma</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">Retail</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/cafe">Cafe</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/orders">Orders</a>
+              </li>
+            </ul>
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+            {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}" class="btn btn-danger mx-2">Logout ({{request.user.first_name}})</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary mx-2">Login</a>
+        {% endif %}
+        <button type="button" id="cart-btn" class="btn btn-secondary" data-bs-toggle="popover" title="Cart" data-bs-content="" onClick="showCartBox()">
+          Cart
+        </button>
+        <div id="cart-items" style="display: none;" class="cart-box"></div>
+        </div>
+      </nav>
+    
+    {% block body %}
+        
+    {% endblock body %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+      <script>
+        // Function to display cart items on hover
+        function displayCartItems() {
+          var cart = JSON.parse(localStorage.getItem('cart')) || {};
+          if (Object.keys(cart).length === 0) { // Check if cart is empty
+            clearCart();
+        } else{
+            var cartDisplay = "<h3>Your Shopping Cart</h3>";
+          var total = 0;
+          for (var item in cart){
+              cartDisplay += "<div class='cart-item'>";
+              cartDisplay += "<p class='cart-item-title'>" + cart[item][0] + "</p>";
+              cartDisplay += "<p class='cart-item-price'>Qty: " + cart[item][1] + " | Price: Rs. " + cart[item][2] * cart[item][1] + "</p>";
+              cartDisplay += "</div>";
+              total += cart[item][2] * cart[item][1];
+          }
+          cartDisplay += "<p class='cart-total'>Total: Rs. " + total + "</p>";
+          cartDisplay += "<button class='btn btn-success btn-checkout' onclick='checkout()'>Checkout</button>";
+          cartDisplay += "<button class='btn btn-danger btn-clear' onclick='clearCart()'>Clear Cart</button>";
+          var cartItemsElement = document.getElementById("cart-items");
+          cartItemsElement.innerHTML = cartDisplay;
+          }
+          
+      }
+
+      function clearCart() {
+        localStorage.removeItem('cart'); // Remove the 'cart' item from local storage
+        var cartItemsElement = document.getElementById("cart-items");
+        cartItemsElement.innerHTML = "<h3>Your Shopping Cart is Empty</h3>";
+    }
+
+    function checkout(){
+      window.location.replace('http://127.0.0.1:8000/checkout');
+    }
+    
+        // Display cart items on popover show
+      
+        
+
+        function showCartBox() {
+          displayCartItems();
+          var x = document.getElementById("cart-items");
+          if (x.style.display === "none") {
+            x.style.display = "block";
+          } else {
+            x.style.display = "none";
+          }
+        }
+
+        
+      </script>
+    {% block script %}
+    {% endblock script %}
+  </body>
+</html>

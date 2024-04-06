@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Checkout | Milma
+{% endblock title %}
+
+{% block css %}
+    /* Add your custom CSS styles here */
+    .checkoutbox {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 100px;
+    }
+
+    .orderBox {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 600px;
+    }
+
+    .orderBox h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .orderBox p {
+        margin-bottom: 10px;
+    }
+
+    .orderBox ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .orderBox ul li {
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .orderBox ul li:last-child {
+        border-bottom: none;
+    }
+
+    .orderBox ul li span {
+        font-weight: bold;
+    }
+
+    .btn-success {
+        display: block;
+        margin-top: 20px;
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+{% endblock css %}
+
+{% block body %}
+    <div class="checkoutbox">
+        <h1>Your Order</h1>
+        <div class="orderBox" id="orderBox">
+            
+        </div>
+        <button class="btn btn-success" onClick="deliveryDetails()">Place Order</button>
+    </div>
+{% endblock body %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        displayOrder();
+    });
+
+    function displayOrder() {
+        var orderBox = document.getElementById('orderBox');
+        var cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+        if (Object.keys(cart).length === 0) {
+            orderBox.innerHTML = '<p>Your Cart is empty. Add some items to proceed.</p>';
+            return;
+        }
+
+        var orderHTML = "<ul>";
+        var total = 0;
+
+        for (var item in cart) {
+            orderHTML += "<li>";
+            orderHTML += "<span>" + cart[item][0] + "</span>: Qty: " + cart[item][1] + " | Price: Rs. " + (cart[item][2] * cart[item][1]).toFixed(2);
+            orderHTML += "</li>";
+            total += cart[item][2] * cart[item][1];
+        }
+
+        orderHTML += "</ul>";
+        orderHTML += "<p>Total: Rs. " + total.toFixed(2) + "</p>";
+        orderBox.innerHTML += orderHTML;
+    }
+
+    function deliveryDetails() {
+        window.location.replace('http://127.0.0.1:8000/details');
+    }
+</script>
+{% endblock script %}

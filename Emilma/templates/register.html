@@ -1,0 +1,140 @@
+<html>
+<head>
+    <title>Register | Milma</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body,
+		html {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			background: #7abecc !important;
+		}
+        .register-card{
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+			-moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            
+        }
+        form label{
+            font-weight:600;
+        }
+        
+		#messages{
+			background-color: grey;
+			color: #fff;
+			padding: 10px;
+			margin-top: 10px;
+		}
+    </style>
+</head>
+<body>
+<div style="width:50%; margin:auto; margin-top:50px; background: #74cfbf;" class="register-card p-5 border border-primary-subtle rounded">
+    <h1 style="text-align:center;color:black" class="mb-5">REGISTER</h1>
+    {% for message in messages %}
+        <p id="messages">{{message}}</p>
+    {% endfor %}
+    <form method="post" id="registerForm">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="exampleInputUsername" class="form-label">Username</label>
+            <input type="text" class="form-control" id="exampleInputUsername" name="username">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputFirstname" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="exampleInputFirstname" name="firstname">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputLastname" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="exampleInputLastname" name="lastname">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Email address</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email">
+            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPhoneNumber" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="exampleInputPhoneNumber" name="phoneno">
+        </div>
+        <div class="mb-3">
+            <label for="exampleRole" class="form-label">Role</label>
+            <select class="form-select" id="exampleRole" name="role">
+                <option value="" selected>Select option</option>
+                <option value="customer">Customer</option>
+                <option value="deliverer">Deliverer</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
+        <div id="additionalFieldsCustomer" style="display: none;">
+            <div class="mb-3" id="roomNumberField">
+                <label for="exampleInputRollNo" class="form-label">Roll Number</label>
+                <input type="text" class="form-control" id="exampleInputRollNo" name="rollno">
+            </div>
+            <div class="mb-3">
+                <label for="exampleHostel" class="form-label">Hostel</label>
+                <select class="form-select" id="exampleHostel" name="hostel">
+                    <option value="Manimala">Manimala</option>
+                    <option value="Meenachil">Meenachil</option>
+                    <option value="Sahayadri">Sahayadri</option>
+                    <option value="Girls Hostel">Girls Hostel</option>
+                    <option value="Outside">Outside</option>
+                </select>
+            </div>
+            <div class="mb-3" id="roomNumberField">
+                <label for="exampleInputRoomNo" class="form-label">Room Number</label>
+                <input type="number" class="form-control" id="exampleInputRoomNo" name="roomno">
+            </div>
+        </div>
+        <div id="additionalFields" style="display: none;">
+            <div class="mb-3" id="addressField">
+                <label for="exampleInputAddress" class="form-label">Residential Address</label>
+                <input type="text" class="form-control" id="exampleInputAddress" name="address">
+            </div>
+            <div class="mb-3" id="aadharField">
+                <label for="exampleInputAadhar" class="form-label">Aadhar Number</label>
+                <input type="number" class="form-control" id="exampleInputAadhar" name="aadharno">
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" name="password1">
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" name="password2">
+        </div>
+        <button type="submit" class="btn btn-primary" style="display: block; margin: auto;">Register</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('exampleRole').addEventListener('change', function() {
+        var role = this.value;
+        if (role === 'customer') {
+            document.getElementById('additionalFieldsCustomer').style.display = 'block';
+        } else {
+            document.getElementById('additionalFieldsCustomer').style.display = 'none';
+        }
+    });
+
+    document.getElementById('exampleRole').addEventListener('change', function() {
+        var role = this.value;
+        if (role === 'deliverer' || role === 'admin') {
+            document.getElementById('additionalFields').style.display = 'block';
+        } else {
+            document.getElementById('additionalFields').style.display = 'none';
+        }
+    });
+
+    document.getElementById('exampleHostel').addEventListener('change', function() {
+        var hostel = this.value;
+        if (hostel === 'Outside') {
+            document.getElementById('roomNumberField').style.display = 'none';
+        } else {
+            document.getElementById('roomNumberField').style.display = 'block';
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+{% extends 'adminNavbar.html' %}
+{% block title %}
+    Products
+{% endblock title %}
+
+{% block body %}
+<div class="p-5">
+    <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  Add Product
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Add a Product</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="productForm" action="display" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="productname" class="form-label">Name</label>
+            <input type="text" class="form-control" id="productname" name="productname" required>
+            
+            <label for="category" class="form-label mt-3">Category</label>
+            <select class="form-select mb-3" id="category" name="category" aria-label="Default select example" required>
+              <option selected>Select Category</option>
+              <option value="Snacks">Snacks</option>
+              <option value="Beverages">Beverages</option>
+              <option value="Fast Food">Fast Food</option>
+            </select>
+            
+            <label for="subcategory" class="form-label">Sub-Category</label>
+            <select class="form-select mb-3" id="subcategory" name="subcategory" aria-label="Default select example" required>
+              <option selected>Please select category first</option>
+            </select>
+            
+            <label for="price" class="form-label">Price per Product</label>
+            <input type="text" class="form-control" id="price" name="price" required>
+
+            <label for="stock" class="form-label">Stock</label>
+            <input type="number" class="form-control" id="stock" name="stock" required>
+            
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            
+            <label for="formFile" class="form-label">Product Image</label>
+            <input class="form-control" type="file" id="formFile" name="image" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+          </div>
+        </form>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if not products %}
+  <div class="text-bg-danger p-3 mt-3" style="text-align:center;">
+    <h3>No products in the store to display</h3>
+  </div>
+{% else %}
+  <h1 class="mt-5 mb-4">Products Available</h1>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Image</th>
+          <th>Product Name</th>
+          <th>Category</th>
+          <th>Subcategory</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Description</th>
+          <th>Publication Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr>
+          <td><img src="{{ product.image.url }}" alt="{{ product.product_name }}" style="max-width: 100px;"></td>
+          <td>{{ product.product_name }}</td>
+          <td>{{ product.category }}</td>
+          <td>{{ product.subcategory }}</td>
+          <td>{{ product.price }}</td>
+          <td>{{ product.stock }}</td>
+          <td>{{ product.description }}</td>
+          <td>{{ product.pub_date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+{% if existing %}
+  <script>alert("Duplicate entry")</script>
+{% endif %}
+</div>
+  
+
+<script>
+function validateForm() {
+  var productName = document.getElementById("productname").value;
+  var category = document.getElementById("category").value;
+  var subcategory = document.getElementById("subcategory").value;
+  var price = document.getElementById("price").value;
+  var stock = document.getElementById("stock").value;
+  var file = document.getElementById("formFile").value;
+  var description = document.getElementById("description").value;
+  
+  if (productName === '' || category === 'Select Category' || subcategory === 'Please select category first' || price === '' || file === '' || description === '' || stock=== '') {
+    alert("Please fill out all fields");
+    return false;
+  }
+  return true;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('category').addEventListener('change', function() {
+      var category = this.value;
+      var subcategorySelect = document.getElementById('subcategory');
+      subcategorySelect.innerHTML = ''; // Clear existing options
+      
+      if (category === 'Snacks') {
+          addOption(subcategorySelect, 'Biscuits');
+          addOption(subcategorySelect, 'Chocolates');
+          addOption(subcategorySelect, 'Toffee');
+          addOption(subcategorySelect, 'Ready to Eat');
+          addOption(subcategorySelect, 'Chips');
+      } else if (category === 'Beverages') {
+          addOption(subcategorySelect, 'Milk');
+          addOption(subcategorySelect, 'Soft Drinks');
+          addOption(subcategorySelect, 'Milk Shakes');
+      } else if (category === 'Fast Food') {
+          addOption(subcategorySelect, 'Veg');
+          addOption(subcategorySelect, 'Non Veg');
+      }
+  });
+  
+  function addOption(select, text) {
+      var option = document.createElement('option');
+      option.text = text;
+      select.add(option);
+  }
+});
+</script>
+{% endblock body %}

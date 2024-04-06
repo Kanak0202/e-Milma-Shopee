@@ -1,0 +1,348 @@
+{% extends 'adminNavbar.html' %}
+
+{% block title %}
+    Products
+{% endblock title %}
+
+{% block css %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #212529;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e9ecef;
+        }
+
+        input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .button.disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .status-select label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .delivery-options select {
+            margin-bottom: 8px;
+        }
+
+        .delivery-options button {
+            margin-top: 8px;
+        }
+
+        .list-group-item {
+            border: none;
+            background-color: transparent;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 0;
+            border-radius: 0;
+        }
+        
+        .list-group-item .fw-bold {
+            font-weight: bold;
+        }
+        
+        .list-group-item .text-muted {
+            color: #6c757d;
+        }
+        
+        .list-group-item .badge {
+            font-size: 0.8rem;
+            padding: 0.5rem 0.75rem;
+            margin-left: 1rem;
+            border-radius: 0.25rem;
+        }
+        
+        .bg-warning {
+            background-color: #ffc107 !important;
+            color: #343a40 !important;
+        }
+        
+        .text-dark {
+            color: #212529 !important;
+        }
+        
+    </style>
+{% endblock css %}
+
+{% block body %}
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Location</th>
+            <th>Items</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Status Update</th>
+            <th>Assign Deliverer</th>
+        </tr>
+        {% for order in workingOrders %}
+            <tr>
+                <td>MILMAORD{{ order.id }}</td>
+                <td class="orderid" style="display:none">{{ order.id }}</td>
+                <td>{{ order.customer.user_profile.user.first_name }} {{ order.customer.user_profile.user.last_name }}</td>
+                <td>{{ order.location }}</td>
+                <td style="width:30%" class="items-display" id="ord{{order.id}}">{{ order.items_json }}</td>
+                <td>Rs. {{ order.amount }}</td>
+                <td id="status{{ order.id }}">{{ order.status }}</td>
+                {% if order.status == 'Pending' %}
+                    <td class="status-select">
+                        <input type="radio" id="packaging{{ order.id }}" name="status{{ order.id }}" value="Packing" onclick="enableDeliveryOptions({{ order.id }})">
+                        <label id="packagingLabel{{ order.id }}" for="packaging{{ order.id }}">Packing</label>
+                        <input type="radio" id="outfordelivery{{ order.id }}" name="status{{ order.id }}" value="Out for delivery" disabled>
+                        <label for="outfordelivery{{ order.id }}">Out for delivery</label>
+                    </td>
+                    <td class="delivery-options">
+                        <select name="deliverersDropdown{{ order.id }}" id="deliverersDropdown{{ order.id }}" disabled>
+                            <option value="select deliverer">Select deliverer</option>
+                            {% for deliverer in deliverers %}
+                                <option value="{{ deliverer.username }}">{{ deliverer.username }}</option>
+                            {% endfor %}
+                        </select>
+                        <button id="assignDelivererButton{{ order.id }}" onclick="lockPartner({{ order.id }})" class="button disabled">Lock partner</button>
+                    </td>
+                {% elif order.status == 'Packing' %}
+                    <td class="status-select">
+                        <input type="radio" id="packaging{{ order.id }}" name="status{{ order.id }}" value="Packing" onclick="enableDeliveryOptions({{ order.id }})" hidden>
+                        <label id="packagingLabel{{ order.id }}" for="packaging{{ order.id }}" hidden>Packing</label>
+                        <input type="radio" id="outfordelivery{{ order.id }}" name="status{{ order.id }}" value="Out for delivery" disabled>
+                        <label for="outfordelivery{{ order.id }}">Out for delivery</label>
+                    </td>
+                    <td class="delivery-options">
+                        <select name="deliverersDropdown{{ order.id }}" id="deliverersDropdown{{ order.id }}">
+                            <option value="select deliverer">Select deliverer</option>
+                            {% for deliverer in deliverers %}
+                                <option value="{{ deliverer.username }}">{{ deliverer.username }}</option>
+                            {% endfor %}
+                        </select>
+                        <button id="assignDelivererButton{{ order.id }}" onclick="lockPartner({{ order.id }})" class="button">Lock partner</button>
+                    </td>
+                {% elif order.status == 'Assigned Deliverer' %}
+                    <td class="status-select">
+                        <input type="radio" id="packaging{{ order.id }}" name="status{{ order.id }}" value="Packing" onclick="enableDeliveryOptions({{ order.id }})" hidden>
+                        <label id="packagingLabel{{ order.id }}" for="packaging{{ order.id }}" hidden>Packing</label>
+                        <input type="radio" id="outfordelivery{{ order.id }}" name="status{{ order.id }}" value="Out for delivery" onClick="outForDelivery({{ order.id }})">
+                        <label for="outfordelivery{{ order.id }}">Out for delivery</label>
+                    </td>
+                    <td class="delivery-options">
+                        <select name="deliverersDropdown{{ order.id }}" id="deliverersDropdown{{ order.id }}" disabled>
+                            <option value="select deliverer">Select deliverer</option>
+                            {% for deliverer in deliverers %}
+                                <option value="{{ deliverer.username }}" disabled>{{ deliverer.username }}</option>
+                            {% endfor %}
+                        </select>
+                        <button id="assignDelivererButton{{ order.id }}" onclick="lockPartner({{ order.id }})" class="button disabled">Lock partner</button>
+                    </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock body %}
+
+{% block script %}
+    <script>
+        // Function to enable/disable delivery options based on the selected status
+        function enableDeliveryOptions(orderId) {
+            const packagingRadio = document.getElementById('packaging' + orderId);
+            const packagingRadioValue = document.getElementById('packaging' + orderId).value;
+            const outForDeliveryRadio = document.getElementById('outfordelivery' + orderId);
+            const deliverersDropdown = document.getElementById('deliverersDropdown' + orderId);
+            const assignDelivererButton = document.getElementById('assignDelivererButton' + orderId);
+
+            packagingRadio.disabled = true;
+
+            if (packagingRadio.checked) {
+                outForDeliveryRadio.disabled = true;
+                deliverersDropdown.disabled = false;
+                assignDelivererButton.classList.remove('disabled');
+                const statusData = {
+                    orderId: orderId,
+                    status: packagingRadioValue
+                };
+                updateStatus(statusData);
+            } else {
+                outForDeliveryRadio.disabled = true;
+                deliverersDropdown.disabled = true;
+                assignDelivererButton.classList.add('disabled');
+            }
+        }
+
+        const updateStatus = async (statusData) => {
+            console.log("Updating status");
+            const csrftoken = getCookie('csrftoken');
+
+            const response = await fetch("http://127.0.0.1:8000/adminside/updateOrderStatus", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrftoken
+                },
+                body: JSON.stringify(statusData),
+                credentials: 'same-origin'
+            });
+            const responseData = await response.json();
+            if (responseData.success === true && statusData.status == 'Packing') {
+                const statusUpdateP = document.getElementById('status' + statusData.orderId);
+                statusUpdateP.innerHTML = "Packing";
+            } else if (responseData.success === true && statusData.status == 'Assigned Deliverer') {
+                const statusUpdateP = document.getElementById('status' + statusData.orderId);
+                statusUpdateP.innerHTML = "Assigned Deliverer";
+            } else if (responseData.success === true && statusData.status == 'Out for delivery') {
+                const statusUpdateP = document.getElementById('status' + statusData.orderId);
+                statusUpdateP.innerHTML = "Out for delivery";
+            }
+        };
+
+        // Function to enable "Out for delivery" radio button after delivery partner is selected and locked
+        function lockPartner(orderId) {
+            const outForDeliveryRadio = document.getElementById('outfordelivery' + orderId);
+            const deliverersDropdown = document.getElementById('deliverersDropdown' + orderId);
+            const assignDelivererButton = document.getElementById('assignDelivererButton' + orderId);
+            const selectedDeliverer = deliverersDropdown.value;
+            const outfordeliveryRadioValue = document.getElementById('outfordelivery' + orderId).value;
+            const statusData = {
+                orderId: orderId,
+                status: "Assigned Deliverer",
+                deliverer: selectedDeliverer
+            };
+            updateStatus(statusData);
+            // Enable "Out for delivery" radio button
+            outForDeliveryRadio.disabled = false;
+            deliverersDropdown.disabled = true;
+            assignDelivererButton.classList.add('disabled'); // Disable the button
+        }
+
+        // Function to handle "Out for delivery" click
+        function outForDelivery(orderId) {
+            console.log("Out for delivery clicked");
+            const outForDeliveryRadio = document.getElementById('outfordelivery' + orderId);
+            const outForDeliveryValue = document.getElementById('outfordelivery' + orderId).value;
+            outForDeliveryRadio.disabled = true;
+            // Enable/disable based on the selected status
+            if (outForDeliveryRadio.checked) {
+                console.log("Out for delivery checked")
+                outForDeliveryRadio.disabled = true;
+                const statusData = {
+                    orderId: orderId,
+                    status: outForDeliveryValue
+                };
+                updateStatus(statusData);
+            } else {
+                outForDeliveryRadio.disabled = true;
+            }
+        }
+
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var orderIdsClass = document.getElementsByClassName("orderid");
+        const orderIdsList = [];
+        for(i=0;i<orderIdsClass.length;i=i+1){
+            var allorderids = orderIdsClass[i].innerHTML;
+            orderIdsList.push(allorderids);
+        }
+        console.log(orderIdsList);
+
+        for (var i = 0; i < orderIdsList.length; i++) {
+            var valueElement = document.getElementById("ord" + orderIdsList[i]);
+            var value = valueElement.innerHTML;
+            valueElement.innerHTML = ''; // Clear the content after retrieving it
+        
+            try {
+                var items = JSON.parse(value);
+        
+                // Iterate over the keys of the parsed object
+                for (var key in items) {
+                    if (items.hasOwnProperty(key)) {
+                        var item = items[key];
+                        var name = item[0];
+                        var qty = item[1];
+                        var price = item[2];
+        
+                        // Create the HTML elements for each item
+                        var listItem = document.createElement('li');
+                        listItem.className = "list-group-item d-flex justify-content-between align-items-center";
+listItem.innerHTML = `
+    <div class="d-flex flex-column">
+        <div class="fw-bold">${name}</div>
+        <div class="text-muted">Price: Rs. ${price}</div>
+    </div>
+    <div class="d-flex align-items-center">
+        <span class="badge bg-warning text-dark">${qty}</span>
+    </div>
+`;
+                        // Append the list item to the corresponding element
+                        valueElement.appendChild(listItem);
+                    }
+                }
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+            }
+        }
+        
+        
+    </script>
+{% endblock script %}

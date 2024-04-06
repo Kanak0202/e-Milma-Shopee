@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Details | Milma
+{% endblock title %}
+
+{% block css %}
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f8f8;
+        color: #333;
+    }
+
+    .main-container{
+        margin:50px 100px;
+    }
+
+    h2 {
+        margin-top: 30px;
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .order-container {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        background-color: #fff;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-gap: 20px;
+        border-left: 5px solid green; /* Corrected */
+    }
+
+    .subcontainer {
+        display: flex;
+    }
+
+    .leftItems {
+        display: grid;
+        width: 50%;
+    }
+
+    .rightItems {
+        display: grid;
+    }
+
+    .order-container img {
+        width: 60px;
+        height: 60px;
+        margin-right: 15px;
+        border-radius: 4px;
+        object-fit: cover;
+    }
+
+    /* Completed orders specific styles */
+    .completed-orders {
+        margin-top: 40px;
+    }
+
+    .completed-orders p {
+        font-style: italic;
+        color: #666;
+    }
+
+    /* Button styles */
+    .button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .order-container {
+            padding: 15px;
+        }
+
+        h2 {
+            font-size: 20px;
+        }
+    }
+
+    .callout {
+        padding: 15px;
+        margin: 20px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f0f0f0;
+        color: #333;
+        border-left: 5px solid red; /* Increase the width here */
+    }
+
+</style>
+{% endblock css %}
+
+{% block body %}
+<div class="main-container">
+    <h2 class="ms-4 mb-4">Working Orders</h2>
+<ul>
+    {% if workingOrders %}
+    {% for order in workingOrders %}
+    <div class="order-container">
+        <li style="font-weight:600; text-align:center">Order ID: MILMAORD{{ order.id }}</li>
+        <hr style="width: 50%; border-bottom:2px; border-color: blue; margin: 0px auto;">
+        <div class="subcontainer mt-3">
+            <div class="leftItems"  style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%">
+                <li  style="font-weight:600; text-align:center; font-size:20px">Items:</li>
+                <ul>
+                    {% for product in order.products.all %}
+                    <li class="mt-2">
+                        <img src="{{ product.image.url }}" alt="{{ product.product_name }}">
+                        {{ product.product_name }}
+                        <!-- Display other product details as needed -->
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="rightItems" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%">
+                <li style="font-size:20px;">Amount Paid: Rs. {{order.amount}}</li>
+                <li style="font-size:25px;" class="mt-3">Status: {{ order.status }}
+                    {% if order.status == "Out for delivery" %}
+                    <p>Your deliverer is: {{order.deliverer.user_profile.user.first_name}} {{order.deliverer.user_profile.user.last_name}}</p>
+                    {% endif %}
+                </li>
+                <li style="font-size:20px;" class="mt-3">Delivering At: <span style="font-weight:600">{{order.location}}</span></li>
+            </div>
+        </div>
+
+    </div>
+    <!-- Add more details as needed -->
+    {% endfor %}
+    {% else %}
+    <div class="callout callout-secondary">
+        <p>No current orders</p>
+    </div>
+    {% endif %}
+</ul>
+<div class="completed-orders">
+    <h2 class="ms-4 mb-4">Completed Orders</h2>
+    {% if completedOrders %}
+    <ul>
+        {% for order in completedOrders %}
+        <div class="order-container">
+            <li style="font-weight:600; text-align:center">Order ID: MILMAORD{{ order.id }}</li>
+            <hr style="width: 50%; border-bottom:2px; border-color: green; margin: 0px auto;">
+            <div class="subcontainer mt-3">
+                <div class="leftItems" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%">
+                    <li style="font-weight:600; text-align:center; font-size:20px">Items:</li>
+                    <ul>
+                        {% for product in order.products.all %}
+                        <li class="mt-2">
+                            <img src="{{ product.image.url }}" alt="{{ product.product_name }}">
+                            {{ product.product_name }}
+                            <!-- Display other product details as needed -->
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="rightItems" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%">
+                    <li style="font-size:20px;">Amount Paid: Rs. {{order.amount}}</li>
+                    <li style="font-size:25px;" class="mt-3">Status: {{ order.status }}</li>
+                    <li style="font-size:20px;" class="mt-3">Delivered At: {{order.location}}</li>
+                </div>
+            </div>
+        </div>
+        <!-- Add more details as needed -->
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No previous orders to display</p>
+    {% endif %}
+</div>
+</div>
+{% endblock body %}
+
+{% block script %}
+<!-- Add your JavaScript code here if needed -->
+{% endblock script %}

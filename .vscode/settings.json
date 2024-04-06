@@ -1,0 +1,7 @@
+{
+    "html.format.indentInnerHtml": true,
+    "html.format.templating": true,
+    "emmet.includeLanguages": {
+        "django-html": "html"
+    }
+}
