@@ -67,7 +67,6 @@ class BaseHandler:
 
 class UsernameValidationHandler(BaseHandler):
     def handle_request(self, user_data):
-        print("Inside username validation")
         username = user_data.get('username')
         # Perform username validation logic
         if not username:
@@ -177,7 +176,6 @@ def register(request):
     if request.method == 'POST':
         user_data = request.POST.dict()
         error_message = usernameHandler.handle_request(user_data)
-        print(error_message)
         if error_message:
             messages.error(request, error_message)
             return redirect('register')

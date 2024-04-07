@@ -71,15 +71,9 @@ class Order(models.Model):
     location = models.CharField(max_length=200, null=True, choices=LOCATION)
     amount = models.IntegerField(default=0)
     deliverer = models.ForeignKey(Deliverer,  null=True, on_delete=models.SET_NULL, blank=True)
-    razorpay_id = models.CharField(max_length=100, blank=True)
-    paid = models.BooleanField(default=False)
 
     def transition_to_next_state(self, data):
-        # print(data)
-        # print(self)
-        print("Inside transition function")
         current_state = self.get_current_state()
-        print(current_state)
         if current_state:
             current_state.transition_to_next_state(self, data)
 

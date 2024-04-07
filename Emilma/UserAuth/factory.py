@@ -3,6 +3,9 @@ from .models import Customer, Admin, Deliverer, UserProfile
 
 class UserFactory:
     @staticmethod
+    def create_user(user_data):
+        pass
+    @staticmethod
     def get_factory(role):
         if role == 'customer':
             return CustomerFactory()
