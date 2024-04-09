@@ -6,7 +6,7 @@ import pytz
 
 # Create your models here.
 def product_image_upload(instance, filename):
-    return f'E:/Web-D projects/e-Milma Shopee/Emilma/static/Products/Images/{filename}'
+    return f'C:/Users/ahmed/sdp_milma/e-Milma-Shopee/Emilma/static/Products/Images/{filename}'
 class Product(models.Model):
     product_id = models.AutoField(primary_key=True)
     product_name = models.CharField(max_length = 50)
