@@ -217,7 +217,6 @@
         }
 
         const updateStatus = async (statusData) => {
-            console.log("Updating status");
             const csrftoken = getCookie('csrftoken');
 
             const response = await fetch("http://127.0.0.1:8000/adminside/updateOrderStatus", {
@@ -263,13 +262,11 @@
 
         // Function to handle "Out for delivery" click
         function outForDelivery(orderId) {
-            console.log("Out for delivery clicked");
             const outForDeliveryRadio = document.getElementById('outfordelivery' + orderId);
             const outForDeliveryValue = document.getElementById('outfordelivery' + orderId).value;
             outForDeliveryRadio.disabled = true;
             // Enable/disable based on the selected status
             if (outForDeliveryRadio.checked) {
-                console.log("Out for delivery checked")
                 outForDeliveryRadio.disabled = true;
                 const statusData = {
                     orderId: orderId,
@@ -304,7 +301,6 @@
             var allorderids = orderIdsClass[i].innerHTML;
             orderIdsList.push(allorderids);
         }
-        console.log(orderIdsList);
 
         for (var i = 0; i < orderIdsList.length; i++) {
             var valueElement = document.getElementById("ord" + orderIdsList[i]);

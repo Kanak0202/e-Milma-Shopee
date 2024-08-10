@@ -92,7 +92,6 @@
     for (var i = 0; i < itemsArray.length; i++) {
         // Access the value attribute of each element
         var itemValue = itemsArray[i].getAttribute('value');
-        console.log(itemValue);
     }
 
     var orderIdsClass = document.getElementsByClassName("orderid");
@@ -101,7 +100,6 @@
             var allorderids = orderIdsClass[i].innerHTML;
             orderIdsList.push(allorderids);
         }
-        console.log(orderIdsList);
 
         for (var i = 0; i < orderIdsList.length; i++) {
             var valueElement = document.getElementById("ord" + orderIdsList[i]);

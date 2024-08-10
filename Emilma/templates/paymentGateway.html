@@ -29,7 +29,6 @@
 <script>
     function makePayment(){
         var order = localStorage.getItem('order');
-        console.log(order);
         var orderData = JSON.parse(order);
         if(order.items_json!==[] && orderData){
             sendOrder(orderData);
@@ -39,7 +38,6 @@
     }
 
     const sendOrder = async (orderData) => {
-        console.log("Sending order");
         const csrftoken = getCookie('csrftoken');  // Get CSRF token from cookies
 
         const response = await fetch("http://127.0.0.1:8000/processPayment", {

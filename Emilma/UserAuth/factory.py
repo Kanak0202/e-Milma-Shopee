@@ -19,8 +19,6 @@ class UserFactory:
 class CustomerFactory(UserFactory):
     @staticmethod
     def create_user(user_data):
-        print("Inside customer")
-        print(user_data)
         user = User.objects.create_user(username=user_data['username'], first_name=user_data['firstname'],  last_name=user_data['lastname'], email=user_data['email'], password=user_data['password1'])
         user_profile = UserProfile.objects.create(user=user, name=user_data['username'], email=user_data['email'], role=user_data['role'], phoneno = user_data['phoneno'])
         customer = Customer.objects.create(
@@ -34,8 +32,6 @@ class CustomerFactory(UserFactory):
 class AdminFactory(UserFactory):
     @staticmethod
     def create_user(user_data):
-        print("Inside admin")
-        print(user_data)
         user = User.objects.create_user(username=user_data['username'], email=user_data['email'], password=user_data['password1'])
         user_profile = UserProfile.objects.create(user=user, name=user_data['username'], email=user_data['email'], role=user_data['role'], phoneno = user_data['phoneno'])
         admin = Admin.objects.create(
@@ -48,8 +44,6 @@ class AdminFactory(UserFactory):
 class DelivererFactory(UserFactory):
     @staticmethod
     def create_user(user_data):
-        print("Inside deliverer")
-        print(user_data)
         user = User.objects.create_user(username=user_data['username'], email=user_data['email'], password=user_data['password1'])
         user_profile = UserProfile.objects.create(user=user, name=user_data['username'], email=user_data['email'], role=user_data['role'], phoneno = user_data['phoneno'])
         deliverer = Deliverer.objects.create(

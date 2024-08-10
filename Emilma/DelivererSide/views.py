@@ -8,7 +8,6 @@ def currentOrders(request):
     user_profile = request.user.userprofile
     deliverer = user_profile.deliverer
     orders = Order.objects.filter(deliverer=deliverer, status__in=['Assigned Deliverer', 'Out for delivery'])
-    print(orders)
     context = {
         'orders':orders
     }
@@ -18,7 +17,6 @@ def pastOrders(request):
     user_profile = request.user.userprofile
     deliverer = user_profile.deliverer
     orders = Order.objects.filter(deliverer=deliverer, status__in=['Delivered'])
-    print(orders)
     context = {
         'orders':orders
     }

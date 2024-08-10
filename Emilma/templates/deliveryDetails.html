@@ -107,7 +107,7 @@
             <option value="Sahayadri Hostel">Sahayadri Hostel</option>
             <option value="Girls Hostel">Girls Hostel</option>
         </select>
-        <p>If you are not found at this location, we will deliver your order at your hostel room.</p>
+        <p>If you are not found at this location, we will deliver your order at your hostel reception.</p>
             </div>
             <button class="btn btn-success" type="submit" onClick="makePayment()">Pay</button>
     </div>
@@ -149,7 +149,6 @@
 
 
     function makePayment() {
-        console.log("Inside make payment");
         var order = JSON.parse(localStorage.getItem('order')) || {};
 
         {% if user.is_authenticated %}

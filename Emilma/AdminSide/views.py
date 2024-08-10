@@ -72,7 +72,6 @@ def milmaOrders(request):
 
 @admin_only
 def pastOrders(request):
-    print("Past Milma Orders")
     completedOrders = Order.objects.filter(status='Delivered')
     context = {
         'completedOrders':completedOrders

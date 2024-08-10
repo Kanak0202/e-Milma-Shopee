@@ -173,7 +173,6 @@
 
     // Function to add product to cart
     function addToCart(productId, productName, productPrice) {
-        console.log("Food")
         if (cart[productId] !== undefined) {
             cart[productId][1]++;
             updateAddToCartUI(productId, cart);
@@ -218,7 +217,6 @@
     }
 
     function incrementQuantity(productId){
-        console.log(productId);
         cart[productId][1]++;
         var quantityDisplay = document.getElementById("quantity" + productId);
         quantityDisplay.innerHTML = cart[productId][1];
@@ -226,7 +224,6 @@
     }
 
     function decrementQuantity(productId){
-        console.log(productId);
         cart[productId][1]--;
         if(cart[productId][1] === 0){
             delete cart[productId];

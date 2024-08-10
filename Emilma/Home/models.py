@@ -34,7 +34,6 @@ class PackingState(OrderState):
         order.status = data['status']
         deliveryPartner = data["deliverer"]
         deliverer = Deliverer.objects.get(user_profile__user__username=deliveryPartner)
-        print(deliverer)
         order.deliverer = deliverer
         order.save()
 
@@ -79,10 +78,7 @@ class Order(models.Model):
 
     # Method to retrieve the current state object
     def get_current_state(self):
-        print("Inside current state function")
-        print("Current status: ", self.status)
         if self.status == 'Pending':
-            print("Inside get current pending")
             return PendingState()
         elif self.status == 'Packing':
             return PackingState()

@@ -71,7 +71,6 @@ def processPayment(request):
         status = "Pending"
         location = data.get("location")
         amount = data.get("amount")
-        print(items_json)
 
         # Get the customer instance corresponding to the provided username
         try:

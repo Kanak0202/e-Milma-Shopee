@@ -65,6 +65,8 @@
                 <th>Order Id</th>
                 <th>Customer</th>
                 <th>Location</th>
+                <th>Hostel</th>
+                <th>Contact No.</th>
                 <th>Update Status</th>
             </tr>
             {% if orders %}
@@ -73,6 +75,8 @@
                         <td>MILMAORD{{order.id}}</td>
                         <td>{{order.customer.user_profile.user.first_name}} {{order.customer.user_profile.user.last_name}}</td>
                         <td>{{order.location}}</td>
+                        <td>{{order.customer.hostel}}</td>
+                        <td>{{order.customer.user_profile.phoneno}}</td>
                         <td><input type="radio" value="Delivered" id="delivered{{order.id}}" onClick="updateDeliveredStatus({{order.id}})">Delivered</td>
                     </tr>
                 {% endfor %}
@@ -95,11 +99,9 @@
                 orderId:orderId,
                 status:delivererRadioValue
             }
-            console.log(statusData)
             updateStatus(statusData);
         }
         const updateStatus = async (statusData) => {
-            console.log("Updating status");
             const csrftoken = getCookie('csrftoken');  // Get CSRF token from cookies
     
             const response = await fetch("http://127.0.0.1:8000/adminside/updateOrderStatus", {
